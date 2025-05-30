@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import BookingForm from '../components/BookingForm';
+import BookingForm from '../components/BookingForm.jsx';
 
 export default function BookingPage() {
   const navigate = useNavigate();

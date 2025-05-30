@@ -2,8 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
 import BookingPage from './pages/BookingPage.jsx';
 import ConfirmationPage from './pages/ConfirmationPage.jsx';
-import Login from './components/Auth/Login.jsx';
-import Register from './components/Auth/Register.jsx';
+import Login from './components/auth/Login.jsx';
+import Register from './components/auth/Register.jsx';
 import Navbar from './components/Navbar.jsx';
 
 function App() {
