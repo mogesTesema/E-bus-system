@@ -1,81 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 export default function HomePage() {
-  const [popularRoutes, setPopularRoutes] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPopularRoutes = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/bookings/routes');
-        // Get top 3 routes (simplified - in production you'd track actual popularity)
-        setPopularRoutes(response.data.slice(0, 3));
-      } catch (error) {
-        console.error('Error fetching routes:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPopularRoutes();
-  }, []);
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-blue-600 mb-4">Welcome to E-Bus Tickets</h1>
-        <p className="text-lg text-gray-600 mb-8">
-          Book your bus tickets online in just a few clicks
-        </p>
-        <Link
-          to="/book"
-          className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
-        >
-          Book Your Ticket Now
-        </Link>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="relative h-96 bg-blue-600 flex items-center justify-center">
+        <div className="text-center text-white px-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">E-Bus Ticket System</h1>
+          <p className="text-xl mb-8">Book your bus tickets across Ethiopia with ease</p>
+          <div className="space-x-4">
+            <Link
+              to="/login"
+              className="inline-block bg-white hover:bg-gray-100 text-blue-600 font-bold py-3 px-8 rounded-lg text-lg transition duration-200"
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="inline-block border-2 border-white hover:bg-white hover:text-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-200"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
       </div>
 
-      <div className="mb-12">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">Popular Routes</h2>
-        {loading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-3 gap-6">
-            {popularRoutes.map((route) => (
-              <div key={route._id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <h3 className="text-xl font-semibold mb-2">
-                  {route.origin} → {route.destination}
-                </h3>
-                <p className="text-gray-600 mb-2">Price: ₹{route.price}</p>
-                <Link
-                  to={`/book`}
-                  state={{ routeId: route._id }}
-                  className="inline-block mt-2 bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-2 px-4 rounded transition"
-                >
-                  Book This Route
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="bg-blue-50 p-6 rounded-lg">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-800">How It Works</h2>
-        <div className="grid md:grid-cols-3 gap-6">
+      {/* Features Section */}
+      <div className="container mx-auto px-4 py-16">
+        <h2 className="text-3xl font-bold text-center mb-12">Why Choose Us?</h2>
+        <div className="grid md:grid-cols-3 gap-8">
           {[
-            { icon: '🔍', title: 'Search', text: 'Find your perfect bus route' },
-            { icon: '🎫', title: 'Book', text: 'Select seats and make payment' },
-            { icon: '🚌', title: 'Travel', text: 'Board with your e-ticket' },
-          ].map((step, index) => (
-            <div key={index} className="text-center p-4">
-              <span className="text-4xl mb-3 inline-block">{step.icon}</span>
-              <h3 className="text-lg font-medium mb-2">{step.title}</h3>
-              <p className="text-gray-600">{step.text}</p>
+            {
+              title: "Easy Booking",
+              description: "Simple and fast ticket booking process",
+              icon: "⏱️"
+            },
+            {
+              title: "Multiple Routes",
+              description: "Covering all major Ethiopian cities",
+              icon: "🗺️"
+            },
+            {
+              title: "Secure Payments",
+              description: "Safe and reliable payment options",
+              icon: "🔒"
+            }
+          ].map((feature, index) => (
+            <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center">
+              <span className="text-4xl mb-4 block">{feature.icon}</span>
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-gray-600">{feature.description}</p>
             </div>
           ))}
         </div>
