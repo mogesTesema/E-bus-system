@@ -5,7 +5,7 @@ import ConfirmationPage from './pages/ConfirmationPage.jsx';
 import Login from './components/auth/Login.jsx';
 import Register from './components/auth/Register.jsx';
 import Navbar from './components/Navbar.jsx';
-import TicketDisplay from './components/TicketDisplay.jsx';
+import DashboardPage from './pages/DashBoardPage.jsx';
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
           <Route path="/confirm" element={<ConfirmationPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route Path="/ticket" element={<TicketDisplay/>}/>
+          <Route path="/dashboard" element={<DashboardPage/>}/>
         </Routes>
       </div>
     </BrowserRouter>

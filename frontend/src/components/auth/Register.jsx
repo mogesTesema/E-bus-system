@@ -61,7 +61,7 @@ export default function Register() {
       });
       
       // Registration successful - redirect to login
-      navigate('/login', { state: { registrationSuccess: true } });
+      navigate('/dashboard', { state: { registrationSuccess: true } });
     } catch (error) {
       console.error('Registration error:', error);
       setApiError(error.response?.data?.error || 'Registration failed. Please try again.');
