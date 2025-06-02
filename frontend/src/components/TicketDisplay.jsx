@@ -6,7 +6,7 @@ export default function TicketDisplay() {
   const { state } = useLocation();
   const ticket = state?.ticket;
 
-  // Common Ethiopian bus routes
+  
   const ethiopianRoutes = {
     'AA-DB': { origin: 'Addis Ababa', destination: 'Debre Birhan', duration: '3 hours' },
     'AA-BD': { origin: 'Addis Ababa', destination: 'Bahir Dar', duration: '10 hours' },

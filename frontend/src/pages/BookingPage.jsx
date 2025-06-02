@@ -12,15 +12,18 @@ export default function BookingPage() {
     try {
       setLoading(true);
       const token = localStorage.getItem('authToken');
-      
-      if (!token) {
-        toast.error('Please login first');
+      const userId = localStorage.getItem('userId'); 
+      if (!token || !userId) { 
+        toast.error('Please login first to book a ticket.');
         return navigate('/login');
       }
 
+      
+      const bookingDataWithUser = { ...bookingData, userId: userId };
+
       const response = await axios.post(
-        'http://localhost:5000/api/bookings',
-        bookingData,
+        'http://localhost:5000/api/bookings/book', 
+        bookingDataWithUser, 
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -29,12 +32,21 @@ export default function BookingPage() {
       );
 
       toast.success('Booking confirmed!');
-      navigate('/dashboard/my-tickets', { 
-        state: { newBooking: response.data } 
+      navigate('/confirm', {
+        state: { newBooking: response.data }
       });
     } catch (error) {
       console.error('Booking error:', error);
-      const errorMessage = error.response?.data?.message || 'Booking failed. Please try again.';
+      let errorMessage = 'Booking failed. Please try again.';
+      if (error.response) {
+        if (error.response.status === 404) {
+          errorMessage = 'Booking service endpoint not found on server. Please check server status.';
+        } else if (error.response.status === 400) {
+          errorMessage = error.response.data?.error || 'Bad request: Please check your booking details.';
+        } else {
+          errorMessage = error.response.data?.message || errorMessage;
+        }
+      }
       toast.error(errorMessage);
     } finally {
       setLoading(false);

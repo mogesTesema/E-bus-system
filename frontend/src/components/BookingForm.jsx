@@ -4,81 +4,93 @@ import { toast } from 'react-toastify';
 
 export default function BookingForm({ onBook, loading }) {
   const [formData, setFormData] = useState({
-    origin: 'Addis Ababa',
-    destination: 'Bahir Dar', // Set default destination
+    origin: 'Addis Ababa', 
+    destination: '', 
     date: '',
-    passengers: 1,
+    quantity: 1, 
     paymentMethod: 'mobile_money'
   });
   const [routes, setRoutes] = useState([]);
-  const [availableDestinations, setAvailableDestinations] = useState(["Bahir Dar","Adama",'Jimma','Dessie','Dire Dawa']);
+  
+  const [availableDestinations, setAvailableDestinations] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  // Supported routes from the PDF
-  const supportedRoutes = [
+  const supportedCities = ['Addis Ababa']; 
+  const supportedDestinations = ['Bahir Dar', 'Adama', 'Jimma', 'Dessie', 'Dire Dawa']; 
+
+  
+  const manualSupportedRoutes = [
     { origin: 'Addis Ababa', destination: 'Bahir Dar', price: 500 },
     { origin: 'Addis Ababa', destination: 'Adama', price: 200 },
-    { origin: 'Addis Ababa', destination: 'Jimma', price: 450 },
+    { origin: 'Addis Ababa', destination: 'Jimma', price: 450 }, 
     { origin: 'Addis Ababa', destination: 'Dessie', price: 600 },
-    { origin: 'Addis Ababa', destination: 'Dire Dawa', price: 800 }
+    { origin: 'Addis Ababa', destination: 'Dire Dawa', price: 800 } 
+    
   ];
 
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        // First try to get routes from backend
         const response = await axios.get('http://localhost:5000/api/bookings/routes');
+
         
-        // If no routes in backend, use the supportedRoutes as fallback
-        const routesData = response.data.length > 0 ? response.data : supportedRoutes;
+        const routesData = response.data.length > 0 ? response.data : manualSupportedRoutes;
         setRoutes(routesData);
-        
-        // Initialize destinations based on default origin
-        updateDestinations('Addis Ababa', routesData);
+
+       
+        updateDestinations(formData.origin, routesData);
+
       } catch (error) {
         console.error('Error fetching routes:', error);
-        // If API fails, use the supportedRoutes
-        setRoutes(supportedRoutes);
-        updateDestinations('Addis Ababa', supportedRoutes);
-        toast.error('Failed to load routes from server. Using default routes.');
+       
+        setRoutes(manualSupportedRoutes);
+        updateDestinations(formData.origin, manualSupportedRoutes);
+        toast.error('Failed to load routes from server. Using default routes (booking may not work).');
       }
     };
     fetchRoutes();
-  }, []);
+  }, []); 
 
   useEffect(() => {
-    // Calculate total price whenever destination or passengers changes
-    if (formData.destination) {
+   
+    if (formData.destination && availableDestinations.length > 0) {
       const selectedDest = availableDestinations.find(d => d.city === formData.destination);
       if (selectedDest) {
-        setTotalPrice(selectedDest.price * formData.passengers);
+        setTotalPrice(selectedDest.price * formData.quantity); 
+      } else {
+        setTotalPrice(0); 
       }
+    } else {
+      setTotalPrice(0); 
     }
-  }, [formData.destination, formData.passengers, availableDestinations]);
+  }, [formData.destination, formData.quantity, availableDestinations]); 
 
   const updateDestinations = (origin, allRoutes) => {
+    
     const destinations = allRoutes
-      .filter(route => route.origin === origin)
+      .filter(route => route.origin === origin && route.destination !== origin)
       .map(route => ({
-        id: route._id || `${route.origin}-${route.destination}`, // Fallback ID if no _id
+       
+        id: route._id, 
         city: route.destination,
         price: route.price
       }));
-    
+
     setAvailableDestinations(destinations);
-    
-    // Set first destination as default if available
-    const defaultDestination = destinations[0]?.city || 'Adama';
+
+   
+    const newDestination = destinations.length > 0 ? destinations[0].city : '';
+
     setFormData(prev => ({
       ...prev,
-      destination: defaultDestination,
-      origin
+      origin: origin,
+      destination: newDestination
     }));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     if (name === 'origin') {
       updateDestinations(value, routes);
     } else {
@@ -88,26 +100,41 @@ export default function BookingForm({ onBook, loading }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!formData.date) {
       toast.error('Please select a travel date');
       return;
     }
+    if (!formData.origin || !formData.destination) {
+      toast.error('Please select both origin and destination.');
+      return;
+    }
+    if (formData.origin === formData.destination) {
+        toast.error('Origin and Destination cannot be the same.');
+        return;
+    }
 
-    const selectedRoute = routes.find(route => 
-      route.origin === formData.origin && 
+    const selectedRoute = routes.find(route =>
+      route.origin === formData.origin &&
       route.destination === formData.destination
     );
 
     if (!selectedRoute) {
-      toast.error('Please select a valid route');
+      toast.error('The selected route is not available. Please choose a valid combination.');
       return;
     }
 
+    
+    if (!selectedRoute._id) {
+        toast.error('Cannot book this route: Route ID not found. Please select a route fetched from the server.');
+        return;
+    }
+
     const bookingData = {
-      routeId: selectedRoute._id || `${selectedRoute.origin}-${selectedRoute.destination}`,
+      userId: localStorage.getItem('userId'), 
+      routeId: selectedRoute._id, 
       date: formData.date,
-      passengers: formData.passengers,
+      quantity: formData.quantity, 
       paymentMethod: formData.paymentMethod,
       price: totalPrice
     };
@@ -127,8 +154,12 @@ export default function BookingForm({ onBook, loading }) {
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           >
-            <option value="Addis Ababa">Addis Ababa</option>
-            {/* Only Addis Ababa as origin as per PDF requirements */}
+         
+            {supportedCities.map(city => (
+              <option key={`origin-${city}`} value={city}>
+                {city}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -140,13 +171,20 @@ export default function BookingForm({ onBook, loading }) {
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
+            
+            disabled={!formData.origin || availableDestinations.length === 0}
           >
-          
-            {availableDestination.map(dest => (
-              <option key={`dest-${dest.id}`} value={dest.city}>
-                {dest.city}
-              </option>
-            ))}
+           
+            {availableDestinations.length === 0 ? (
+              <option value="">No destinations from {formData.origin}</option>
+            ) : (
+              
+              availableDestinations.map(dest => (
+                <option key={`dest-${dest.id}`} value={dest.city}>
+                  {dest.city} - {dest.price} ETB
+                </option>
+              ))
+            )}
           </select>
         </div>
       </div>
@@ -157,6 +195,7 @@ export default function BookingForm({ onBook, loading }) {
           <input
             type="date"
             name="date"
+            
             min={new Date().toISOString().split('T')[0]}
             value={formData.date}
             onChange={handleChange}
@@ -166,13 +205,13 @@ export default function BookingForm({ onBook, loading }) {
         </div>
 
         <div>
-          <label className="block text-gray-700 font-medium mb-2">Passengers</label>
+          <label className="block text-gray-700 font-medium mb-2">Quantity</label>
           <input
             type="number"
-            name="passengers"
+            name="quantity" 
             min="1"
             max="10"
-            value={formData.passengers}
+            value={formData.quantity} 
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
@@ -191,8 +230,8 @@ export default function BookingForm({ onBook, loading }) {
         <label className="block text-gray-700 font-medium mb-3">Payment Method</label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {['mobile_money', 'bank_transfer', 'card'].map(method => (
-            <label 
-              key={method} 
+            <label
+              key={method}
               className={`p-4 border rounded-lg cursor-pointer transition ${formData.paymentMethod === method ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-300'}`}
             >
               <input

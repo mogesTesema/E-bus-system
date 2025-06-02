@@ -19,7 +19,7 @@ export default function Register() {
       ...prev,
       [name]: value
     }));
-    // Clear error when user types
+    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -60,7 +60,7 @@ export default function Register() {
         password: formData.password
       });
       
-      // Registration successful - redirect to login
+      
       navigate('/dashboard', { state: { registrationSuccess: true } });
     } catch (error) {
       console.error('Registration error:', error);

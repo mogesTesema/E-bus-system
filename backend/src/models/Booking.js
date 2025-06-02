@@ -5,7 +5,7 @@ const BookingSchema = new mongoose.Schema({
   route: { type: mongoose.Schema.Types.ObjectId, ref: 'Route', required: true },
   date: { type: Date, required: true },
   quantity: { type: Number, required: true },
-  status: { type: String, default: 'Pending' }
+  status: { type: String, default: 'confirmed' }
 });
 
 module.exports = mongoose.model('Booking', BookingSchema);

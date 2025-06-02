@@ -6,7 +6,6 @@ export default function Navbar() {
       <div className="container mx-auto flex justify-between">
         <Link to="/" className="text-xl font-bold">E-Bus</Link>
         <div className="flex gap-4">
-          {/* <Link to="/book" className="hover:underline">Book Ticket</Link> */}
           <Link to="/login" className="hover:underline">Login</Link>
           <Link to="/register" className="hover:underline">Register</Link>
         </div>

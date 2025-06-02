@@ -1,4 +1,4 @@
-// components/auth/Login.jsx
+
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,9 +11,9 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Backend response is assumed to contain 'userId' but NOT 'token' based on this line:
+      
       const response = await axios.post('http://localhost:5000/api/auth/login', { username, password });
-      localStorage.setItem('userId', response.data.userId); // <<< This is what is stored
+      localStorage.setItem('userId', response.data.userId); 
       navigate('/dashboard');
     } catch (error) {
       alert('Login failed');
