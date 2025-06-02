@@ -11,7 +11,7 @@ export default function BookingForm({ onBook, loading }) {
     paymentMethod: 'mobile_money'
   });
   const [routes, setRoutes] = useState([]);
-  const [availableDestinations, setAvailableDestinations] = useState([]);
+  const [availableDestinations, setAvailableDestinations] = useState(["Bahir Dar","Adama",'Jimma','Dessie','Dire Dawa']);
   const [totalPrice, setTotalPrice] = useState(0);
 
   // Supported routes from the PDF
@@ -68,7 +68,7 @@ export default function BookingForm({ onBook, loading }) {
     setAvailableDestinations(destinations);
     
     // Set first destination as default if available
-    const defaultDestination = destinations[0]?.city || '';
+    const defaultDestination = destinations[0]?.city || 'Adama';
     setFormData(prev => ({
       ...prev,
       destination: defaultDestination,
@@ -141,7 +141,8 @@ export default function BookingForm({ onBook, loading }) {
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           >
-            {availableDestinations.map(dest => (
+          
+            {availableDestination.map(dest => (
               <option key={`dest-${dest.id}`} value={dest.city}>
                 {dest.city}
               </option>
