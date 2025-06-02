@@ -33,9 +33,10 @@ const createDefaultRoutes = async () => {
   const count = await Route.countDocuments();
   if (count === 0) {
     await Route.insertMany([
-      { origin: 'New York', destination: 'Boston', price: 25 },
-      { origin: 'Los Angeles', destination: 'San Francisco', price: 40 },
-      { origin: 'Chicago', destination: 'Detroit', price: 30 }
+      { origin: 'Addis Ababa', destination: 'Adama', price: 200 },
+      { origin: 'Addis Ababa', destination: 'Gimma', price: 340 },
+      { origin: 'Addis Ababa', destination: 'Dir Dawa', price: 30 },
+      {origin: 'Adama', destination:'Addis Ababa'}
     ]);
     console.log('Default routes created');
   }
