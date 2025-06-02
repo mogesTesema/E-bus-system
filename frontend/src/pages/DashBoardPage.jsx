@@ -363,7 +363,7 @@ const DashboardPage = () => {
               </div>
 
           
-              <div className="hidden md:block md:w-1/2 bg-blue-50 relative">
+              <div className="hidden md:block md:w-3/4 bg-blue-50 relative">
                 <img
                   src={ethiopianBus}
                   alt="Ethiopian Bus"
